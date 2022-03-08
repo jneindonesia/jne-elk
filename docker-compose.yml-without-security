@@ -12,12 +12,12 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - xpack.license.self_generated.type=trial
-      - xpack.security.enabled=true
-      - xpack.security.http.ssl.enabled=true
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
       - xpack.security.http.ssl.key=$CERTS_DIR/node1/node1.key
       - xpack.security.http.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
       - xpack.security.http.ssl.certificate=$CERTS_DIR/node1/node1.crt
-      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=false
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.security.transport.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
       - xpack.security.transport.ssl.certificate=$CERTS_DIR/node1/node1.crt
@@ -51,12 +51,12 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - xpack.license.self_generated.type=trial
-      - xpack.security.enabled=true
-      - xpack.security.http.ssl.enabled=true
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
       - xpack.security.http.ssl.key=$CERTS_DIR/node2/node2.key
       - xpack.security.http.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
       - xpack.security.http.ssl.certificate=$CERTS_DIR/node2/node2.crt
-      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=false
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.security.transport.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
       - xpack.security.transport.ssl.certificate=$CERTS_DIR/node2/node2.crt
@@ -90,12 +90,12 @@ services:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - xpack.license.self_generated.type=trial
-      - xpack.security.enabled=true
-      - xpack.security.http.ssl.enabled=true
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
       - xpack.security.http.ssl.key=$CERTS_DIR/node3/node3.key
       - xpack.security.http.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
       - xpack.security.http.ssl.certificate=$CERTS_DIR/node3/node3.crt
-      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.enabled=false
       - xpack.security.transport.ssl.verification_mode=certificate
       - xpack.security.transport.ssl.certificate_authorities=$CERTS_DIR/ca/ca.crt
       - xpack.security.transport.ssl.certificate=$CERTS_DIR/node3/node3.crt
@@ -131,10 +131,9 @@ services:
       - 5601:5601
     environment:
       - SERVERNAME=localhost
-      - ELASTICSEARCH_HOSTS=["https://node1:9200","https://node2:9200","https://node3:9200"]
+      - ELASTICSEARCH_HOSTS=["http://node1:9200","http://node2:9200","http://node3:9200"]
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=$KIBANA_SYSTEM_PASSWORD
-      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$CERTS_DIR/ca/ca.crt
       - SERVER_SSL_ENABLED=false
       - SERVER_SSL_KEY=$CERTS_DIR/kibana/kibana.key
       - SERVER_SSL_CERTIFICATE=$CERTS_DIR/kibana/kibana.crt
@@ -163,28 +162,28 @@ services:
   #   container_name: heartbeat
   #   networks:
   #     - elastic
-  logstash:
-    image: docker.elastic.co/logstash/logstash:${VERSION}
-    container_name: logstash
-    depends_on:
-      {
-        "node1": { "condition": "service_healthy" },
-        "node2": { "condition": "service_healthy" },
-        "node3": { "condition": "service_healthy" }
-      }
-    environment:
-      - xpack.monitoring.enabled=true
-      - xpack.monitoring.elasticsearch.username=logstash_system
-      - xpack.monitoring.elasticsearch.password=$LOGSTASH_SYSTEM
-      - xpack.monitoring.elasticsearch.hosts=["https://node1:9200","https://node2:9200","https://node3:9200"]
-      - xpack.monitoring.elasticsearch.ssl.certificate_authority=$CERTS_DIR/ca/ca.crt
-      - LOGSTASH_SYSTEM=$LOGSTASH_SYSTEM
-      - CERTS_DIR=$CERTS_DIR
-    volumes:
-      - ./logstash/logstash.conf:/usr/share/logstash/config/logstash-sample.conf
-      - certs:$CERTS_DIR
-    networks:
-      - elastic
+  #logstash:
+  #  image: docker.elastic.co/logstash/logstash:${VERSION}
+  #  container_name: logstash
+  #  depends_on:
+  #    {
+  #      "node1": { "condition": "service_healthy" },
+  #      "node2": { "condition": "service_healthy" },
+  #      "node3": { "condition": "service_healthy" }
+  #    }
+  #  environment:
+  #    - xpack.monitoring.enabled=false
+  #    - xpack.monitoring.elasticsearch.username=logstash_system
+  #    - xpack.monitoring.elasticsearch.password=$LOGSTASH_SYSTEM
+  #    - xpack.monitoring.elasticsearch.hosts=["https://node1:9200","https://node2:9200","https://node3:9200"]
+  #    - xpack.monitoring.elasticsearch.ssl.certificate_authority=$CERTS_DIR/ca/ca.crt
+  #    - LOGSTASH_SYSTEM=$LOGSTASH_SYSTEM
+  #    - CERTS_DIR=$CERTS_DIR
+  #  volumes:
+  #    - ./logstash/logstash.conf:/usr/share/logstash/config/logstash-sample.conf
+  #    - certs:$CERTS_DIR
+  #  networks:
+  #    - elastic
   apm:
     image: docker.elastic.co/apm/apm-server:${VERSION}
     container_name: apm
